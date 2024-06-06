@@ -1,0 +1,52 @@
+Package: hubverse
+Title: Easily Install and Load the 'hubverse'
+Version: 0.0.0.9000
+Authors@R: 
+    c(person("Li", "Shandross", , "lshandross@umass.edu", role = c("aut", "cre"),
+           comment = c(ORCID = "0009-0008-1348-1954")),
+      person(family = "Consortium of Infectious Disease Modeling Hubs",
+           role = c("cph")))
+Description: A collection of packages that enables collaborative modeling
+    exercises through a unified framework for aggregating, visualizing, and 
+    evaluating forecasts. This package is designed to make it easy to install 
+    and load multiple 'hubverse' packages in a single step. Learn more at 
+    <https://hubverse.io/en/latest/index.html>.
+License: MIT + file LICENSE
+Encoding: UTF-8
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.3.1
+URL: https://github.com/Infectious-Disease-Modeling-Hubs/hubverse
+BugReports: https://github.com/Infectious-Disease-Modeling-Hubs/hubverse/issues
+Imports: 
+    dplyr,
+    hubAdmin (>= 0.2.0),
+    hubCI (>= 0.0.0.9001),
+    hubData (>= 0.1.0),
+    hubEnsembles (>= 0.1.2),
+    hubExamples (>= 0.0.0.9001),
+    hubEvals (>= 0.0.0.9000),
+    hubUtils (>= 0.0.1),
+    hubValidations (>= 0.0.1),
+    hubVis (>= 0.0.0.9100),
+    magrittr,
+    rlang,
+    tibble,
+    yaml
+Suggests: 
+    knitr,
+    rmarkdown,
+Remotes:
+    Infectious-Disease-Modeling-Hubs/hubAdmin,
+    Infectious-Disease-Modeling-Hubs/hubCI,
+    Infectious-Disease-Modeling-Hubs/hubData,
+    Infectious-Disease-Modeling-Hubs/hubDev,
+    Infectious-Disease-Modeling-Hubs/hubEnsembles,
+    Infectious-Disease-Modeling-Hubs/hubEvals,
+    Infectious-Disease-Modeling-Hubs/hubExamples,
+    Infectious-Disease-Modeling-Hubs/hubValidations,
+    Infectious-Disease-Modeling-Hubs/hubVis,
+    Infectious-Disease-Modeling-Hubs/hubUtils,
+Config/Needs/website: Infectious-Disease-Modeling-Hubs/hubStyle
+Depends: 
+    R (>= 2.10)
+VignetteBuilder: knitr
