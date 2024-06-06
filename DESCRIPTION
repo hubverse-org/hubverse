@@ -33,6 +33,7 @@ Imports:
     tibble,
     yaml
 Suggests: 
+    aws.s3,
     knitr,
     rmarkdown,
 Remotes:
