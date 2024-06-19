@@ -1,6 +1,6 @@
 Package: hubverse
 Title: Easily Install and Load the 'hubverse'
-Version: 0.0.0.9000
+Version: 0.0.1.0000
 Authors@R: 
     c(person("Li", "Shandross", , "lshandross@umass.edu", role = c("aut", "cre"),
            comment = c(ORCID = "0009-0008-1348-1954")),
@@ -15,19 +15,18 @@ License: MIT + file LICENSE
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.1
-URL: https://github.com/Infectious-Disease-Modeling-Hubs/hubverse
-BugReports: https://github.com/Infectious-Disease-Modeling-Hubs/hubverse/issues
+URL: https://github.com/hubverse-org/hubverse
+BugReports: https://github.com/hubverse-org/hubverse/issues
 Imports: 
     dplyr,
-    hubAdmin (>= 0.2.0),
-    hubCI (>= 0.0.0.9001),
-    hubData (>= 0.1.0),
-    hubDevs (>= 0.0.0.9004),
+    hubAdmin (>= 1.0.0),
+    hubCI (>= 0.0.1),
+    hubData (>= 0.2.0),
     hubEnsembles (>= 0.1.2),
-    hubExamples (>= 0.0.0.9001),
+    hubExamples (>= 0.0.0.9002),
     hubEvals (>= 0.0.0.9000),
-    hubUtils (>= 0.0.1),
-    hubValidations (>= 0.0.1),
+    hubUtils (>= 0.1.0),
+    hubValidations (>= 0.1.0),
     hubVis (>= 0.0.0.9100),
     magrittr,
     rlang,
@@ -38,17 +37,16 @@ Suggests:
     knitr,
     rmarkdown,
 Remotes:
-    Infectious-Disease-Modeling-Hubs/hubAdmin,
-    Infectious-Disease-Modeling-Hubs/hubCI,
-    Infectious-Disease-Modeling-Hubs/hubData,
-    Infectious-Disease-Modeling-Hubs/hubDevs,
-    Infectious-Disease-Modeling-Hubs/hubEnsembles,
-    Infectious-Disease-Modeling-Hubs/hubEvals,
-    Infectious-Disease-Modeling-Hubs/hubExamples,
-    Infectious-Disease-Modeling-Hubs/hubValidations,
-    Infectious-Disease-Modeling-Hubs/hubVis,
-    Infectious-Disease-Modeling-Hubs/hubUtils,
-Config/Needs/website: Infectious-Disease-Modeling-Hubs/hubStyle
+    hubverse-org/hubAdmin,
+    hubverse-org/hubCI,
+    hubverse-org/hubData,
+    hubverse-org/hubEnsembles,
+    hubverse-org/hubEvals,
+    hubverse-org/hubExamples,
+    hubverse-org/hubValidations,
+    hubverse-org/hubVis,
+    hubverse-org/hubUtils,
+Config/Needs/website: hubverse-org/hubStyle
 Depends: 
     R (>= 2.10)
 VignetteBuilder: knitr

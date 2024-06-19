@@ -22,33 +22,31 @@ You can install the development version of hubverse from
 
 ``` r
 # install.packages("devtools")
-devtools::install_github("Infectious-Disease-Modeling-Hubs/hubverse")
+devtools::install_github("hubverse-org/hubverse")
 ```
 
 ## Usage
 
 `library(hubverse)` loads the core hubverse packages:
 
-- [hubData](https://infectious-disease-modeling-hubs.github.io/hubData/)
-  for tools to access and work with data in a modeling hub
-- [hubEnsembles](https://infectious-disease-modeling-hubs.github.io/hubEnsembles/)
-  for ensemble methods to combine model outputs
-- [hubVis](https://infectious-disease-modeling-hubs.github.io/hubVis/)
-  for plotting model outputs
-- [hubUtils](https://infectious-disease-modeling-hubs.github.io/hubUtils/)
-  for lightweight utility functions
-- [hubExamples](https://infectious-disease-modeling-hubs.github.io/hubExamples/)
-  for example data in the hubverse format
-- [hubEvals](https://infectious-disease-modeling-hubs.github.io/hubEvals/)
-  for evaluating model outputs
-- [hubValidations](https://infectious-disease-modeling-hubs.github.io/hubValidations/)
-  for validating modeling hubs and their model output
-- [hubAdmin](https://infectious-disease-modeling-hubs.github.io/hubAdmin/)
-  for administrating a modeling hub
-- [hubCI](https://infectious-disease-modeling-hubs.github.io/hubCI/) for
-  continuous integration tools
-- [hubDevs](https://infectious-disease-modeling-hubs.github.io/hubDevs/)
-  for creating and standardizing hubverse packages
+- [hubData](https://hubverse-org.github.io/hubData/) for tools to access
+  and work with data in a modeling hub
+- [hubEnsembles](https://hubverse-org.github.io/hubEnsembles/) for
+  ensemble methods to combine model outputs
+- [hubVis](https://hubverse-org.github.io/hubVis/) for plotting model
+  outputs
+- [hubUtils](https://hubverse-org.github.io/hubUtils/) for lightweight
+  utility functions
+- [hubExamples](https://hubverse-org.github.io/hubExamples/) for example
+  data in the hubverse format
+- [hubEvals](https://hubverse-org.github.io/hubEvals/) for evaluating
+  model outputs
+- [hubValidations](https://hubverse-org.github.io/hubValidations/) for
+  validating modeling hubs and their model output
+- [hubAdmin](https://hubverse-org.github.io/hubAdmin/) for
+  administrating a modeling hub
+- [hubCI](https://hubverse-org.github.io/hubCI/) for continuous
+  integration tools
 
 ## Example
 

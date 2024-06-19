@@ -18,9 +18,9 @@ knitr::opts_chunk$set(
 If you don't have the following packages, make sure to install them
 
 ```{r install, eval=FALSE}
-remotes::install_github("Infectious-Disease-Modeling-Hubs/hubData")
-remotes::install_github("Infectious-Disease-Modeling-Hubs/hubEnsembles")
-remotes::install_github("Infectious-Disease-Modeling-Hubs/hubVis")
+remotes::install_github("hubverse-org/hubData")
+remotes::install_github("hubverse-org/hubEnsembles")
+remotes::install_github("hubverse-org/hubVis")
 ```
 
 Once the required packages are installed, load the following:
@@ -75,7 +75,7 @@ head(target_data) # print
 ```
 
 ## Calculate some ensembles
-See [hubEnsembles package](https://infectious-disease-modeling-hubs.github.io/hubEnsembles/index.html) for more information
+See [hubEnsembles package](https://hubverse-org.github.io/hubEnsembles/index.html) for more information
 
 Quantile mean: 
 ```{r}
@@ -92,7 +92,7 @@ head(linear_pool)
 ```
 
 ## Plot the output
-See [hubVis package](https://infectious-disease-modeling-hubs.github.io/hubVis/index.html) for more information
+See [hubVis package](https://hubverse-org.github.io/hubVis/index.html) for more information
 
 ### Data processing
 Modify and filter the target data for plotting:
