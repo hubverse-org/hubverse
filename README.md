@@ -47,8 +47,6 @@ devtools::install_github("hubverse-org/hubverse")
   administrating a modeling hub
 - [hubCI](https://hubverse-org.github.io/hubCI/) for continuous
   integration tools
-- [hubDevs](https://hubverse-org.github.io/hubDevs/) for creating and
-  standardizing hubverse packages
 
 ## Example
 
