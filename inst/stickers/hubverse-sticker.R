@@ -10,7 +10,7 @@ font_add_google("Poppins", "poppins")
 showtext_auto()
 
 
-sticker(imgurl, package="hubverse",
+sticker(imgurl, package = "hubverse",
         ## font info
         p_size = 18, p_y = 1.4, p_color = "#3C88BE", p_family = "poppins",
         ## image info
