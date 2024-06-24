@@ -1,9 +1,11 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# hubverse <a href="https://hubverse.io/en/latest/index.html"><img src="man/figures/logo.png" align="right" height="131" alt="hubverse website" /></a>
+# hubverse <a href="https://hubverse.io/en/latest/index.html"><img src="inst/stickers/hubverse-sticker.png" align="right" height="131" alt="hubverse website" /></a>
 
 <!-- badges: start -->
+
+[![R-CMD-check](https://github.com/hubverse-org/hubverse/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/hubverse-org/hubverse/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 
 ## Overview
