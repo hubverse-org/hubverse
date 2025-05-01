@@ -1,7 +1,7 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# hubverse <a href="https://docs.hubverse.io/en/latest/index.html"><img src="inst/stickers/hubverse-sticker.png" align="right" height="131" alt="hubverse website" /></a>
+# hubverse <a href="https://hubverse.io/"><img src="inst/stickers/hubverse-sticker.png" align="right" height="131" alt="hubverse website" /></a>
 
 <!-- badges: start -->
 
