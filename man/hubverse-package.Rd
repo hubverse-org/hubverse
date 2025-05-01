@@ -8,7 +8,7 @@
 \description{
 \if{html}{\figure{logo.png}{options: style='float: right' alt='logo' width='120'}}
 
-A collection of packages that enables collaborative modeling exercises through a unified framework for aggregating, visualizing, and evaluating forecasts. This package is designed to make it easy to install and load multiple 'hubverse' packages in a single step. Learn more at \url{https://hubverse.io/en/latest/index.html}.
+A collection of packages that enables collaborative modeling exercises through a unified framework for aggregating, visualizing, and evaluating forecasts. This package is designed to make it easy to install and load multiple 'hubverse' packages in a single step. Learn more at \url{https://docs.hubverse.io/en/latest/index.html}.
 }
 \seealso{
 Useful links:
