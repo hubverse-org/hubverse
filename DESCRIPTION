@@ -10,7 +10,7 @@ Description: A collection of packages that enables collaborative modeling
     exercises through a unified framework for aggregating, visualizing, and 
     evaluating forecasts. This package is designed to make it easy to install 
     and load multiple 'hubverse' packages in a single step. Learn more at 
-    <https://hubverse.io/en/latest/index.html>.
+    <https://hubverse.io/>.
 License: MIT + file LICENSE
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)

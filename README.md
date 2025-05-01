@@ -1,7 +1,7 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# hubverse <a href="https://hubverse.io/en/latest/index.html"><img src="inst/stickers/hubverse-sticker.png" align="right" height="131" alt="hubverse website" /></a>
+# hubverse <a href="https://hubverse.io/"><img src="inst/stickers/hubverse-sticker.png" align="right" height="131" alt="hubverse website" /></a>
 
 <!-- badges: start -->
 
@@ -16,7 +16,7 @@ through a unified framework for aggregating, visualizing, and evaluating
 forecasts. This package is designed to make it easy to install and load
 multiple ‘hubverse’ packages in a single step.
 
-Learn more at <https://hubverse.io/en/latest/index.html>.
+Learn more at <https://hubverse.io/>.
 
 ## Installation
 
@@ -84,4 +84,4 @@ project, you agree to abide by its terms.
 
 Interested in contributing back to the open-source Hubverse project?
 Learn more about how to [get involved in the Hubverse
-Community](https://hubverse.io/en/latest/overview/contribute.html)
+Community](https://hubverse.io/community/index.html)
