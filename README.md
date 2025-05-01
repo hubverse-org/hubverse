@@ -16,7 +16,7 @@ through a unified framework for aggregating, visualizing, and evaluating
 forecasts. This package is designed to make it easy to install and load
 multiple ‘hubverse’ packages in a single step.
 
-Learn more at <https://docs.hubverse.io/en/latest/index.html>.
+Learn more at <https://hubverse.io/>.
 
 ## Installation
 
