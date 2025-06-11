@@ -34,7 +34,7 @@ The following demonstration shows how to access and analyze data from a real hub
 
 The hubverse packages `hubData`, `hubVis`, and `hubEvals` must be installed through the R-universe package repository using the commands below.
 ```{r install, eval=FALSE}
-install.packages(pkgs = c("hubData", "hubVis", "hubEvals"), 
+install.packages(pkgs = c("hubData", "hubVis", "hubEvals"),
                  repos = c("https://hubverse-org.r-universe.dev",
                            "https://cloud.r-project.org"))
 ```
@@ -58,8 +58,8 @@ CDC's FluSight Forecast Hub exists as a [GitHub repository](https://github.com/c
 
 We start by initializing a connection to the hub in the cloud. Below, we print out metadata about the resulting connection. This is by default not printed, but examining it shows how the hub configuration is passed to the various utilities.
 ```{r}
-(hub_con <- hubData::s3_bucket("cdcepi-flusight-forecast-hub/") |> 
-  hubData::connect_hub(skip_checks = TRUE)) 
+(hub_con <- hubData::s3_bucket("cdcepi-flusight-forecast-hub/") |>
+   hubData::connect_hub(skip_checks = TRUE))
 ```
 
 We then collect a subset of model output that we will interact with further in this demonstration. Specifically, we will extract zero through three week-ahead quantile predictions of weekly incident flu hospitalizations made for the state of Texas on three dates in late 2023 and early 2024. For simplicity, we will restrict our query to predictions made for five arbitrarily chosen models, although predictions for over 30 models are available on each of these dates.
@@ -76,18 +76,27 @@ flusight_data <- hub_con |>
   dplyr::filter(target == "wk inc flu hosp",
                 reference_date %in% reference_dates,
                 model_id %in% models,
-                output_type == "quantile", 
+                output_type == "quantile",
                 location == "48", ## FIPS code for Texas
                 horizon > -1) |>
-  hubData::collect_hub() 
+  hubData::collect_hub()
 ```
 
 
 ```{r, echo=FALSE}
 knitr::kable(flusight_data[116:120,
-                           c("model_id", "reference_date", "location", "output_type", "output_type_id", "value")], 
-             digits = 2, 
-             caption = "Five rows of the `flusight_data` object collected above. The \"target\", \"horizon\", and \"target_end_date\" columns have been excluded for readability. The \"output_type_id\" and \"value\" columns show the different predicted quantiles for the number of hospital admissions due to influenza made by the CMU-TimeSeries model for location 48 (Texas). The predictions were made during the week of December 16, 2023 (reference date) and are making a prediction for the horizon of 1 week ahead, for the week ending December 23.")
+                           c("model_id", "reference_date", "location",
+                             "output_type", "output_type_id", "value")],
+             digits = 2,
+             caption = "Five rows of the `flusight_data` object collected above.
+             The \"target\", \"horizon\", and \"target_end_date\" columns have
+             been excluded for readability. The \"output_type_id\" and \"value\"
+             columns show the different predicted quantiles for the number of
+             hospital admissions due to influenza made by the CMU-TimeSeries
+             model for location 48 (Texas). The predictions were made during the
+             week of December 16, 2023 (reference date) and are making a
+             prediction for the horizon of 1 week ahead, for the week ending
+             December 23.")
 ```
 
 
@@ -99,19 +108,22 @@ We can use the `aws.s3` package to read the contents of the most up-to-date targ
 target_data <-
   aws.s3::s3read_using(
     readr::read_csv,
-    object = "s3://cdcepi-flusight-forecast-hub/target-data/target-hospital-admissions.csv"
+    object = "s3://cdcepi-flusight-forecast-hub/target-data/target-hospital-admissions.csv" #nolint
   ) |>
-  dplyr::mutate(target = "wk inc flu hosp") |> 
+  dplyr::mutate(target = "wk inc flu hosp") |>
   dplyr::select(date, target, location, value) |> # keep only required columns
-  dplyr::filter(location == "48", 
-                date >= as.Date("2023-09-23"), date <= as.Date("2024-05-01")) |> 
-  dplyr::rename(observation = value) |> 
+  dplyr::filter(location == "48",
+                date >= as.Date("2023-09-23"), date <= as.Date("2024-05-01")) |>
+  dplyr::rename(observation = value) |>
   dplyr::arrange(date)
 ```
 
 ```{r, echo=FALSE}
-knitr::kable(target_data[1:5,], digits = 2, 
-             caption = "Five rows of the `target_data` object read in above. The observation column shows the number of hospital admissions due to influenza reported in Texas (location 48) on the week ending on each date.")
+knitr::kable(target_data[1:5, ], digits = 2,
+             caption = "Five rows of the `target_data` object read in above.
+             The observation column shows the number of hospital admissions
+             due to influenza reported in Texas (location 48) on the week
+             ending on each date.")
 ```
 
 \clearpage 
@@ -131,7 +143,7 @@ flusight_data |>
     fill_transparency = .1,
     intervals = 0.8
   ) +
-  ggplot2::theme(legend.position = "bottom") + 
+  ggplot2::theme(legend.position = "bottom") +
   ggplot2::ylab("hospital admissions due to influenza")
 ```
 
@@ -144,22 +156,21 @@ Using the model output data collected above, we can pass these data to the `hubE
 ```{r, fig.cap = "Forecasts of hospital admissions in Texas due to influenza in the 2023-2024 respiratory virus season. Predictions from five submitted models and an ensemble are shown along with observed data. The observed data are shown as a line with dots for specific weekly observations. Each individual model is shown in orange and the mean ensemble is shown in black, with the 80% prediction intervals shown as shaded regions."}
 ensemble_forecast <- hubEnsembles::simple_ensemble(flusight_data)
 
-all_forecasts <- flusight_data |> 
+all_forecasts <- flusight_data |>
   dplyr::bind_rows(ensemble_forecast)
 
-all_forecasts |> 
-  hubVis::plot_step_ahead_model_output(
-    target_data,
-    x_col_name = "target_end_date",
-    use_median_as_point = TRUE,
-    group = "reference_date",
-    interactive = FALSE,
-    fill_transparency = .2,
-    intervals = 0.90,
-    one_color = "darkgray",
-    ens_name = "hub-ensemble",
-    ens_color = "orange",
-    pal_color = NULL) +
+all_forecasts |>
+  hubVis::plot_step_ahead_model_output(target_data,
+                                       x_col_name = "target_end_date",
+                                       use_median_as_point = TRUE,
+                                       group = "reference_date",
+                                       interactive = FALSE,
+                                       fill_transparency = .2,
+                                       intervals = 0.90,
+                                       one_color = "darkgray",
+                                       ens_name = "hub-ensemble",
+                                       ens_color = "orange",
+                                       pal_color = NULL) +
   ggplot2::theme(legend.position = "bottom") +
   ggplot2::ylab("hospital admissions due to influenza")
 ```
@@ -174,28 +185,30 @@ The code below starts by making oracle output data, which is a dataset formatted
 
 ```{r, fig.cap = "Average weighted interval score (WIS) computed by model (y-axis). The total length of each bar is the average WIS across all predictions made. WIS can be decomposed into penalties for overprediction, underprediction and dispersion, the contributions of which are shown by the segments of the bar. The UMass-flusion model has the lowest (best) average WIS, and it received a greater penalty for underprediction relative to the penalty for overprediction."}
 ## make oracle output
-oracle_output <- target_data |> 
-  dplyr::select(date, location, observation) |> 
-  dplyr::rename(
-    target_end_date = date,
-    oracle_value = observation) |> 
-  tidyr::crossing(horizon = 0:3) |> 
-  dplyr::mutate(reference_date = as.Date(target_end_date) - horizon * 7L) |> 
+oracle_output <- target_data |>
+  dplyr::select(date, location, observation) |>
+  dplyr::rename(target_end_date = date,
+                oracle_value = observation) |>
+  tidyr::crossing(horizon = 0:3) |>
+  dplyr::mutate(reference_date = as.Date(target_end_date) - horizon * 7L) |>
   dplyr::filter(reference_date %in% reference_dates)
 
-scores <- hubEvals::score_model_out(
-  all_forecasts,
-  oracle_output,
-  baseline = "FluSight-baseline") |> 
+scores <- hubEvals::score_model_out(all_forecasts,
+                                    oracle_output,
+                                    baseline = "FluSight-baseline") |>
   dplyr::arrange(wis)
 
-scoringutils::plot_wis(scores, x="model_id")
+scoringutils::plot_wis(scores, x = "model_id")
 ```
 
 
 ```{r, echo=FALSE}
-knitr::kable(scores[,c(1:2, 7:9)], digits = 2,
-             caption = "A print-out of the `scores` object computed above, containing the summary metrics for the five component models and the ensemble model. Columns including other metrics, including bias, underprediction, overprediction and dispersion were omitted for space.")
+knitr::kable(scores[, c(1:2, 7:9)], digits = 2,
+             caption = "A print-out of the `scores` object computed above,
+             containing the summary metrics for the five component models and
+             the ensemble model. Columns including other metrics, including
+             bias, underprediction, overprediction and dispersion were omitted
+             for space.")
 ```
 
 \clearpage
