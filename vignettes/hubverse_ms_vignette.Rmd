@@ -156,9 +156,9 @@ all_forecasts |>
     interactive = FALSE,
     fill_transparency = .2,
     intervals = 0.90,
-    one_color = "orange",
+    one_color = "darkgray",
     ens_name = "hub-ensemble",
-    ens_color = "black",
+    ens_color = "orange",
     pal_color = NULL) +
   ggplot2::theme(legend.position = "bottom") +
   ggplot2::ylab("hospital admissions due to influenza")
