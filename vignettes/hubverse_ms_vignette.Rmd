@@ -68,41 +68,54 @@ ggplot2::theme_set(ggplot2::theme_bw())
 
 
 # Load forecast data
+
 CDC's FluSight Forecast Hub exists as a [GitHub repository](https://github.com/cdcepi/FluSight-forecast-hub).[@noauthor_cdcepiflusight-forecast-hub_2025] Using hubverse tools, it also has been mirrored to the cloud, so a copy of the data lives at a publicly-accessible AWS S3 bucket. This means that instead of needing to download a local copy of the repository, the data for this project can be directly accessed from the cloud using `hubData` tools.
 
-We start by initializing a connection to the hub in the cloud. Below, we print out metadata about the resulting connection. This is by default not printed, but examining it shows how the hub configuration is passed to the various utilities.
+We start by initializing a connection to the hub in the cloud. Printing displays metadata about the resulting connection.
+
 ```{r}
-(hub_con <- hubData::s3_bucket("cdcepi-flusight-forecast-hub/") |>
-   hubData::connect_hub(skip_checks = TRUE))
+hub_path <- hubData::s3_bucket("cdcepi-flusight-forecast-hub/")
+
+hub_con <- hubData::connect_hub(hub_path, skip_checks = TRUE)
+hub_con
 ```
 
-We then collect a subset of model output that we will interact with further in this demonstration. Specifically, we will extract zero through three week-ahead quantile predictions of weekly incident flu hospitalizations made for the state of Texas on three dates in late 2023 and early 2024. For simplicity, we will restrict our query to predictions made for five arbitrarily chosen models, although predictions for over 30 models are available on each of these dates.
+We then collect a subset of model outputs that we will interact with further in this demonstration. Specifically, we will extract zero through three week-ahead quantile predictions of weekly incident flu hospitalizations made for the state of Texas on three dates in late 2023 and early 2024. For simplicity, we will restrict our query to predictions made for five arbitrarily chosen models, although predictions for over 30 models are available on each of these dates.
 
 ```{r}
-models <- c("FluSight-baseline",
-            "CMU-TimeSeries",
-            "UMass-flusion",
-            "cfa-flumech",
-            "UGA_flucast-INFLAenza")
+models <- c(
+  "FluSight-baseline",
+  "CMU-TimeSeries",
+  "UMass-flusion",
+  "cfa-flumech",
+  "UGA_flucast-INFLAenza"
+)
 reference_dates <- c("2023-12-16", "2024-01-13", "2024-02-10")
 
 flusight_data <- hub_con |>
-  dplyr::filter(target == "wk inc flu hosp",
-                reference_date %in% reference_dates,
-                model_id %in% models,
-                output_type == "quantile",
-                location == "48", ## FIPS code for Texas
-                horizon > -1) |>
+  filter(
+    target == "wk inc flu hosp",
+    reference_date %in% reference_dates,
+    model_id %in% models,
+    output_type == "quantile",
+    location == "48", ## FIPS code for Texas
+    horizon > -1
+  ) |>
   hubData::collect_hub()
 ```
 
 
 ```{r, echo=FALSE}
-knitr::kable(flusight_data[116:120,
-                           c("model_id", "reference_date", "location",
-                             "output_type", "output_type_id", "value")],
-             digits = 2,
-             caption = "Five rows of the `flusight_data` object collected above.
+knitr::kable(
+  flusight_data[
+    116:120,
+    c(
+      "model_id", "reference_date", "location",
+      "output_type", "output_type_id", "value"
+    )
+  ],
+  digits = 2,
+  caption = "Five rows of the `flusight_data` object collected above.
              The \"target\", \"horizon\", and \"target_end_date\" columns have
              been excluded for readability. The \"output_type_id\" and \"value\"
              columns show the different predicted quantiles for the number of
@@ -110,7 +123,8 @@ knitr::kable(flusight_data[116:120,
              model for location 48 (Texas). The predictions were made during the
              week of December 16, 2023 (reference date) and are making a
              prediction for the horizon of 1 week ahead, for the week ending
-             December 23.")
+             December 23."
+)
 ```
 
 
