@@ -264,6 +264,14 @@ knitr::kable(scores[, c(1:2, 7:9)], digits = 2,
 \clearpage
 # Session information
 
+```{r, load-libraries-for-session-info, include=FALSE}
+library(hubData)
+library(hubEnsembles)
+library(hubVis)
+library(hubEvals)
+```
+
+
 ```{r}
 sessionInfo()
 ```
