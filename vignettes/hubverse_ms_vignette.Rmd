@@ -62,10 +62,6 @@ library(dplyr)
 library(ggplot2)
 ```
 
-```{r, echo=FALSE}
-ggplot2::theme_set(ggplot2::theme_bw())
-```
-
 
 # Load forecast data
 
@@ -160,6 +156,14 @@ knitr::kable(target_data[1:5, ], digits = 2,
 
 We can use the hubVis package to create a single graphic that overlays the forecasts from the five models and three forecast dates with the observed data.
 
+First we set the default theme for plots to be a clean black and white theme.
+
+```{r}
+theme_set(theme_bw())
+```
+
+Next we use function `plot_step_ahead_model_output()` to visualize the model output data in relation to target data. This function takes the model output data and target data as input, and plots the predictions from each model along with the observed data. The `x_col_name` argument specifies the column to use for the x-axis, which is `target_end_date` in this case. The `use_median_as_point` argument specifies whether to use the median prediction as the point estimate for each model, and `group` specifies how to group the data for plotting. The `fill_transparency` argument controls the transparency of the shaded prediction intervals, and `intervals` specifies the width of the prediction intervals to plot.
+
 ```{r, fig.cap = "Forecasts of hospital admissions in Texas due to influenza in the 2023-2024 respiratory virus season. Predictions from five models are shown along with observed data (line with dots for specific observations). Each model is shown in a different color, with the 80% prediction intervals shown as a shaded region.", fig.width = 9, fig.height = 6}  
 flusight_data |>
   hubVis::plot_step_ahead_model_output(
@@ -171,8 +175,8 @@ flusight_data |>
     fill_transparency = .1,
     intervals = 0.8
   ) +
-  ggplot2::theme(legend.position = "bottom") +
-  ggplot2::ylab("hospital admissions due to influenza")
+  theme(legend.position = "bottom") +
+  ylab("hospital admissions due to influenza")
 ```
 
 \clearpage 
@@ -185,22 +189,23 @@ Using the model output data collected above, we can pass these data to the `hubE
 ensemble_forecast <- hubEnsembles::simple_ensemble(flusight_data)
 
 all_forecasts <- flusight_data |>
-  dplyr::bind_rows(ensemble_forecast)
+  bind_rows(ensemble_forecast)
 
 all_forecasts |>
   hubVis::plot_step_ahead_model_output(target_data,
-                                       x_col_name = "target_end_date",
-                                       use_median_as_point = TRUE,
-                                       group = "reference_date",
-                                       interactive = FALSE,
-                                       fill_transparency = .2,
-                                       intervals = 0.90,
-                                       one_color = "darkgray",
-                                       ens_name = "hub-ensemble",
-                                       ens_color = "orange",
-                                       pal_color = NULL) +
-  ggplot2::theme(legend.position = "bottom") +
-  ggplot2::ylab("hospital admissions due to influenza")
+    x_col_name = "target_end_date",
+    use_median_as_point = TRUE,
+    group = "reference_date",
+    interactive = FALSE,
+    fill_transparency = .2,
+    intervals = 0.90,
+    one_color = "darkgray",
+    ens_name = "hub-ensemble",
+    ens_color = "orange",
+    pal_color = NULL
+  ) +
+  theme(legend.position = "bottom") +
+  ylab("hospital admissions due to influenza")
 ```
 
 \clearpage
