@@ -29,23 +29,37 @@ knitr::opts_chunk$set(
 )
 ```
 
-# Software configuration
-The following demonstration shows how to access and analyze data from a real hub using `r R.version$string` and several of the hubverse R packages.[@the_consortium_of_infectious_disease_modeling_hubs_hubverse_2025] The following packages are on CRAN and may be installed using the standard `install.packages()` function: `hubEnsembles`, `aws.s3`, `arrow`, `ggplot2` and `dplyr`.
+# Required software
 
-The hubverse packages `hubData`, `hubVis`, and `hubEvals` must be installed through the R-universe package repository using the commands below.
+The following demonstration shows how to access and analyze data from a real hub using `r R.version$string` and several of the hubverse R packages.[@the_consortium_of_infectious_disease_modeling_hubs_hubverse_2025]
+
+The hubverse packages `hubData`, `hubVis`, `hubEnsembles` and `hubEvals` are best installed through the R-universe package repository to ensure you are working with the latest released versions.
+
 ```{r install, eval=FALSE}
-install.packages(pkgs = c("hubData", "hubVis", "hubEvals"),
-                 repos = c("https://hubverse-org.r-universe.dev",
-                           "https://cloud.r-project.org"))
+install.packages(
+  pkgs = c("hubData", "hubVis", "hubEnsembles", "hubEvals"),
+  repos = c(
+    "https://hubverse-org.r-universe.dev",
+    "https://cloud.r-project.org"
+  )
+)
 ```
 
-Once the required packages are installed, load them into your R session. (Session information including package versions are included at the end of this vignette.)
+Supporting packages `ggplot2` and `dplyr` can be installed from CRAN.
+
+```{r install-CRAN, eval=FALSE}
+install.packages(
+  pkgs = c("dplyr", "ggplot2")
+)
+```
+
+Once the required packages are installed, load the supporting packages into your R session. (Session information on all the packages used including package versions are included at the end of this vignette.)
 
 ```{r libraries, message=FALSE}
-library(hubData)
-library(hubEnsembles)
-library(hubVis)
-library(hubEvals)
+# Data munging
+library(dplyr)
+# Plotting
+library(ggplot2)
 ```
 
 ```{r, echo=FALSE}
