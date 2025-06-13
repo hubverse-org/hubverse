@@ -126,28 +126,45 @@ knitr::kable(
 
 # Loading target data
 
-We can use the `aws.s3` package to read the contents of the most up-to-date target data file stored in the cloud.
+To be able to visualise forecasts in relation to observed data, we need to load the target (observed) data for the locations and time period we are interested in. 
 
-```{r, message=FALSE}
-target_data <-
-  aws.s3::s3read_using(
-    readr::read_csv,
-    object = "s3://cdcepi-flusight-forecast-hub/target-data/target-hospital-admissions.csv" #nolint
-  ) |>
-  dplyr::mutate(target = "wk inc flu hosp") |>
-  dplyr::select(date, target, location, value) |> # keep only required columns
-  dplyr::filter(location == "48",
-                date >= as.Date("2023-09-23"), date <= as.Date("2024-05-01")) |>
-  dplyr::rename(observation = value) |>
-  dplyr::arrange(date)
+Hubs generally contain two types of target data: time-series data and oracle output data. Time-series data is stored in a long format, with one row per observation, a single observed value per observation unit and is the format used for visualisation of observed target data. Oracle output data on the other hand is often derived from time-series data but more closely matches the model output data format and is used for the evaluation of model outputs. The FluSight hub stores target data in both formats, but we will first load the time-series format to visualise the performance of hub models against observed data. For more information on target data formats, see the [hubverse documentation](https://docs.hubverse.io/en/latest/user-guide/target-data.html).
+
+Accessing target data follows a similar pattern to accessing model output data. We start by connecting to the target data type of interest in the hub. To access the time-series format we use `hubData::connect_target_timeseries()` function.
+
+```{r}
+ts_data_con <- hubData::connect_target_timeseries(hub_path)
 ```
 
+Next, we filter the target data to the location and time period of interest. In this case, we are interested in the state of Texas (FIPS code 48) and the 2023-2024 respiratory virus season, which runs from September 23, 2023 to May 1, 2024. We also filter to the most recent `as_of` date to ensure we are using the latest available data. The `as_of` date is a metadata field that indicates when the target data was last updated.
+
+To enable filtering by the maximum (latest) value of `as_of`, we use the `arrow::to_duckdb()` function to convert the connection to a memory virtual DuckDB table. This allows us to run queries that are supported by DuckDB but not by arrow, including filtering for the maximum value of a column. We then filter the data to the desired location, time period, and maximum `as_of` date, and select the relevant columns. Finally, we collect the data into a local data frame and rename the `target_end_date` column to `date` which is what the `hubVis` package functions expect.
+
+```{r}
+target_data <- ts_data_con |>
+  arrow::to_duckdb() |>
+  filter(
+    location == "48",
+    target_end_date >= "2023-09-23",
+    target_end_date <= "2024-05-01",
+    as_of == max(as_of)
+  ) |>
+  select(location, location_name, target, target_end_date, observation) |>
+  arrange(target_end_date) |>
+  collect() |>
+  rename(date = target_end_date)
+```
+
+The resulting target data contains the actual number of hospital admissions due to influenza in Texas for the 2023-2024 respiratory virus season, which is the same target that hub models the models are predicting.
+
 ```{r, echo=FALSE}
-knitr::kable(target_data[1:5, ], digits = 2,
-             caption = "Five rows of the `target_data` object read in above.
+knitr::kable(target_data[1:5, ],
+  digits = 2,
+  caption = "Five rows of the `target_data` object read in above.
              The observation column shows the number of hospital admissions
              due to influenza reported in Texas (location 48) on the week
-             ending on each date.")
+             ending on each date."
+)
 ```
 
 \clearpage 
