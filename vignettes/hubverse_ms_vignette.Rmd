@@ -263,7 +263,6 @@ oracle_output <- oo_data_con |>
 ```
 
 
-
 Note that some hubs may not store oracle output data but it can [generally be generated from the time-series target data](https://docs.hubverse.io/en/latest/user-guide/target-data.html#generating-oracle-output-data) by converting it to a format that matches model output data. For example, in this case, we could have created oracle output data by cross-joining a subset of required columns the target data with the horizons of interest, computing the `reference_date` as the `target_end_date` minus the horizon in weeks and renaming columns to [match expectation for oracle output data](https://docs.hubverse.io/en/latest/user-guide/target-data.html#oracle-output). This is shown below without being evaluated._
 
 ```{r, evalFALSE}
@@ -304,13 +303,6 @@ knitr::kable(scores[, c(1:2, 7:9)],
 
 \clearpage
 # Session information
-
-```{r, load-libraries-for-session-info, include=FALSE}
-library(hubData)
-library(hubEnsembles)
-library(hubVis)
-library(hubEvals)
-```
 
 
 ```{r}
