@@ -236,29 +236,34 @@ The code below starts by making oracle output data, which is a dataset formatted
 ```{r, fig.cap = "Average weighted interval score (WIS) computed by model (y-axis). The total length of each bar is the average WIS across all predictions made. WIS can be decomposed into penalties for overprediction, underprediction and dispersion, the contributions of which are shown by the segments of the bar. The UMass-flusion model has the lowest (best) average WIS, and it received a greater penalty for underprediction relative to the penalty for overprediction."}
 ## make oracle output
 oracle_output <- target_data |>
-  dplyr::select(date, location, observation) |>
-  dplyr::rename(target_end_date = date,
-                oracle_value = observation) |>
+  select(date, location, observation) |>
+  rename(
+    target_end_date = date,
+    oracle_value = observation
+  ) |>
   tidyr::crossing(horizon = 0:3) |>
-  dplyr::mutate(reference_date = as.Date(target_end_date) - horizon * 7L) |>
-  dplyr::filter(reference_date %in% reference_dates)
+  mutate(reference_date = as.Date(target_end_date) - horizon * 7L) |>
+  filter(reference_date %in% reference_dates)
 
 scores <- hubEvals::score_model_out(all_forecasts,
-                                    oracle_output,
-                                    baseline = "FluSight-baseline") |>
-  dplyr::arrange(wis)
+  oracle_output,
+  baseline = "FluSight-baseline"
+) |>
+  arrange(wis)
 
 scoringutils::plot_wis(scores, x = "model_id")
 ```
 
 
 ```{r, echo=FALSE}
-knitr::kable(scores[, c(1:2, 7:9)], digits = 2,
-             caption = "A print-out of the `scores` object computed above,
+knitr::kable(scores[, c(1:2, 7:9)],
+  digits = 2,
+  caption = "A print-out of the `scores` object computed above,
              containing the summary metrics for the five component models and
              the ensemble model. Columns including other metrics, including
              bias, underprediction, overprediction and dispersion were omitted
-             for space.")
+             for space."
+)
 ```
 
 \clearpage
@@ -275,4 +280,3 @@ library(hubEvals)
 ```{r}
 sessionInfo()
 ```
-
