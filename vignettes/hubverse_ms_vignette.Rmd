@@ -71,12 +71,11 @@ We start by initializing a connection to the hub in the cloud. Printing displays
 
 ```{r}
 hub_path <- hubData::s3_bucket("cdcepi-flusight-forecast-hub/")
-
 hub_con <- hubData::connect_hub(hub_path, skip_checks = TRUE)
 hub_con
 ```
 
-We then collect a subset of model outputs that we will interact with further in this demonstration. Specifically, we will extract zero through three week-ahead quantile predictions of weekly incident flu hospitalizations made for the state of Texas on three dates in late 2023 and early 2024. For simplicity, we will restrict our query to predictions made for five arbitrarily chosen models, although predictions for over 30 models are available on each of these dates.
+We then collect a subset of model outputs that we will interact with further in this demonstration. Specifically, we will extract zero through three week-ahead quantile predictions of weekly incident flu hospitalizations made for the state of Texas on three dates in late 2024 and early 2025. For simplicity, we will restrict our query to predictions made for five arbitrarily chosen models, although predictions for over 30 models are available on each of these dates.
 
 ```{r}
 models <- c(
@@ -86,7 +85,8 @@ models <- c(
   "cfa-flumech",
   "UGA_flucast-INFLAenza"
 )
-reference_dates <- c("2023-12-16", "2024-01-13", "2024-02-10")
+
+reference_dates <- c("2024-12-14", "2025-01-11", "2025-02-08")
 
 flusight_data <- hub_con |>
   filter(
@@ -117,9 +117,9 @@ knitr::kable(
              columns show the different predicted quantiles for the number of
              hospital admissions due to influenza made by the CMU-TimeSeries
              model for location 48 (Texas). The predictions were made during the
-             week of December 16, 2023 (reference date) and are making a
+             week of December 14, 2024 (reference date) and are making a
              prediction for the horizon of 1 week ahead, for the week ending
-             December 23."
+             December 21."
 )
 ```
 
@@ -136,7 +136,7 @@ Accessing target data follows a similar pattern to accessing model output data. 
 ts_data_con <- hubData::connect_target_timeseries(hub_path)
 ```
 
-Next, we filter the target data to the location and time period of interest. In this case, we are interested in the state of Texas (FIPS code 48) and the 2023-2024 respiratory virus season, which runs from September 23, 2023 to May 1, 2024. We also filter to the most recent `as_of` date to ensure we are using the latest available data. The `as_of` date is a metadata field that indicates when the target data was last updated.
+Next, we filter the target data to the location and time period of interest. In this case, we are interested in the state of Texas (FIPS code 48) and the 2024-2025 respiratory virus season, which runs from September 23, 2024 to May 1, 2024. We also filter to the most recent `as_of` date to ensure we are using the latest available data. The `as_of` date is a metadata field that indicates when the target data was last updated.
 
 To enable filtering by the maximum (latest) value of `as_of`, we use the `arrow::to_duckdb()` function to convert the connection to a memory virtual DuckDB table. This allows us to run queries that are supported by DuckDB but not by arrow, including filtering for the maximum value of a column. We then filter the data to the desired location, time period, and maximum `as_of` date, and select the relevant columns. Finally, we collect the data into a local data frame and rename the `target_end_date` column to `date` which is what the `hubVis` package functions expect.
 
@@ -145,8 +145,8 @@ target_data <- ts_data_con |>
   arrow::to_duckdb() |>
   filter(
     location == "48",
-    target_end_date >= "2023-09-23",
-    target_end_date <= "2024-05-01",
+    target_end_date >= "2024-09-23",
+    target_end_date <= "2025-05-01",
     as_of == max(as_of)
   ) |>
   select(location, location_name, target, target_end_date, observation) |>
@@ -155,7 +155,7 @@ target_data <- ts_data_con |>
   rename(date = target_end_date)
 ```
 
-The resulting target data contains the actual number of hospital admissions due to influenza in Texas for the 2023-2024 respiratory virus season, which is the same target that hub models the models are predicting.
+The resulting target data contains the actual number of hospital admissions due to influenza in Texas for the 2024-2025 respiratory virus season, which is the same target that hub models the models are predicting.
 
 ```{r, echo=FALSE}
 knitr::kable(target_data[1:5, ],
@@ -181,7 +181,7 @@ theme_set(theme_bw())
 
 Next we use function `plot_step_ahead_model_output()` to visualize the model output data in relation to target data. This function takes the model output data and target data as input, and plots the predictions from each model along with the observed data. The `x_col_name` argument specifies the column to use for the x-axis, which is `target_end_date` in this case. The `use_median_as_point` argument specifies whether to use the median prediction as the point estimate for each model, and `group` specifies how to group the data for plotting. The `fill_transparency` argument controls the transparency of the shaded prediction intervals, and `intervals` specifies the width of the prediction intervals to plot.
 
-```{r, fig.cap = "Forecasts of hospital admissions in Texas due to influenza in the 2023-2024 respiratory virus season. Predictions from five models are shown along with observed data (line with dots for specific observations). Each model is shown in a different color, with the 80% prediction intervals shown as a shaded region.", fig.width = 9, fig.height = 6}  
+```{r, fig.cap = "Forecasts of hospital admissions in Texas due to influenza in the 2024-2025 respiratory virus season. Predictions from five models are shown along with observed data (line with dots for specific observations). Each model is shown in a different color, with the 80% prediction intervals shown as a shaded region.", fig.width = 9, fig.height = 6}  
 flusight_data |>
   hubVis::plot_step_ahead_model_output(
     target_data,
@@ -200,14 +200,18 @@ flusight_data |>
 
 # Build ensemble and visualize
 
-Using the model output data collected above, we can pass these data to the `hubEnsembles::simple_ensemble()` function to build an ensemble that takes the mean of predicted values from each model at each quantile level. This new forecast output is then added to the existing forecasts and visualized all together. The hubEnsembles package supports a range of aggregation approaches including a linear opinion pool (probability density averaging) or using the mean or median of quantiles.[@shandross_multi-model_2025] Model weights can be specified for the various approaches, allowing for some models to influence the output more strongly.
+Using the model output data collected above, we can pass these data to the `hubEnsembles::simple_ensemble()` function to build an ensemble that takes the mean of predicted values from each model at each quantile level. This new forecast output is then added to the existing forecasts. The hubEnsembles package supports a range of aggregation approaches including a linear opinion pool (probability density averaging) or using the mean or median of quantiles.[@shandross_multi-model_2025] Model weights can be specified for the various approaches, allowing for some models to influence the output more strongly.
 
-```{r, fig.cap = "Forecasts of hospital admissions in Texas due to influenza in the 2023-2024 respiratory virus season. Predictions from five submitted models and an ensemble are shown along with observed data. The observed data are shown as a line with dots for specific weekly observations. Each individual model is shown in orange and the mean ensemble is shown in black, with the 80% prediction intervals shown as shaded regions."}
+```{r, fig.cap = "Forecasts of hospital admissions in Texas due to influenza in the 2024-2025 respiratory virus season. Predictions from five submitted models and an ensemble are shown along with observed data. The observed data are shown as a line with dots for specific weekly observations. Each individual model is shown in orange and the mean ensemble is shown in black, with the 80% prediction intervals shown as shaded regions."}
 ensemble_forecast <- hubEnsembles::simple_ensemble(flusight_data)
 
 all_forecasts <- flusight_data |>
   bind_rows(ensemble_forecast)
+```
 
+We can now visualise the ensemble forecast as well as individual model performance all together. 
+
+```{r}
 all_forecasts |>
   hubVis::plot_step_ahead_model_output(target_data,
     x_col_name = "target_end_date",
@@ -229,22 +233,54 @@ all_forecasts |>
 
 # Evaluate forecasts
 
-The package hubEvals can be used to evaluate probabilistic predictions against observed data. The hubEvals package creates an interface for hubverse-style model output and target data to the scoringutils package, which is an engine for computing a number of common scores for probabilistic predictions.[@bosse-scoringutils-2024] 
+The package `hubEvals` can be used to evaluate probabilistic predictions against observed data. The `hubEvals` package creates an interface for hubverse-style model output and oracle output target data to the `scoringutils` package, which is an engine for computing a number of common scores for probabilistic predictions.[@bosse-scoringutils-2024] 
 
-The code below starts by making oracle output data, which is a dataset formatted like hubverse-style model output data but with a point prediction representing the eventual observation, as if observed by an oracle model. The FluSight hub stores target data in a time-series format but not in an oracle output format. The oracle output data format is convenient to use for scoring, as it can be joined with model output data and then the observation and the prediction reside in a single row of stored data. In this example, we compute and show results for the weighted interval score (WIS) with its associated decomposition into overprediction, underprediction, and dispersion penalties, the 50% and 90% prediction interval coverage rates, and the absolute error computed on the median prediction.[@bracher_evaluating_2021]
+As aforementioned, to evaluate model outputs we use oracle output data, a form of target data which matches and can be merged with hubverse-style model output data but which contains a point prediction representing the eventual observation, as if observed by an oracle model. 
 
-```{r, fig.cap = "Average weighted interval score (WIS) computed by model (y-axis). The total length of each bar is the average WIS across all predictions made. WIS can be decomposed into penalties for overprediction, underprediction and dispersion, the contributions of which are shown by the segments of the bar. The UMass-flusion model has the lowest (best) average WIS, and it received a greater penalty for underprediction relative to the penalty for overprediction."}
-## make oracle output
-oracle_output <- target_data |>
+The FluSight hub also stores oracle output data in the cloud, and we can access it using the `hubData::connect_target_oracle_output()` function. This function connects to the oracle output data in the hub and returns a connection object that can again be used to query the data.
+
+```{r}
+oo_data_con <- hubData::connect_target_oracle_output(hub_path)
+```
+
+Once we have a connection to the data, we can query it for the data of interest. In this case, we want to filter the oracle output data to the same location and time period as the model output data, and for the same target. We also filter to the maximum `as_of` date to ensure we are using the latest available data. The `reference_date`, which is present in model output data but not in oracle data, is computed as the `target_end_date` minus the `horizon` in weeks, and used to filter the oracle output data to the same reference dates as the model output data. 
+
+```{r}
+oracle_output <- oo_data_con |>
+  arrow::to_duckdb() |>
+  mutate(reference_date = target_end_date - horizon * 7L) |>
+  filter(
+    reference_date %in% reference_dates,
+    target == "wk inc flu hosp",
+    output_type == "quantile",
+    location == "48", ## FIPS code for Texas
+    horizon > -1,
+    as_of == max(as_of)
+  ) |>
+  select(target, reference_date, target_end_date, location, horizon, output_type, output_type_id, oracle_value) |>
+  arrange(reference_date, horizon) |>
+  collect()
+```
+
+
+
+Note that some hubs may not store oracle output data but it can [generally be generated from the time-series target data](https://docs.hubverse.io/en/latest/user-guide/target-data.html#generating-oracle-output-data) by converting it to a format that matches model output data. For example, in this case, we could have created oracle output data by cross-joining a subset of required columns the target data with the horizons of interest, computing the `reference_date` as the `target_end_date` minus the horizon in weeks and renaming columns to [match expectation for oracle output data](https://docs.hubverse.io/en/latest/user-guide/target-data.html#oracle-output). This is shown below without being evaluated._
+
+```{r, evalFALSE}
+target_data |>
   select(date, location, observation) |>
   rename(
     target_end_date = date,
     oracle_value = observation
   ) |>
   tidyr::crossing(horizon = 0:3) |>
-  mutate(reference_date = as.Date(target_end_date) - horizon * 7L) |>
+  mutate(reference_date = target_end_date - horizon * 7L) |>
   filter(reference_date %in% reference_dates)
+```
 
+Now that we have our oracle (observed) data in a format that can be combined with model output data, we can move onto to evaluating it. In this example, we compute and show results for the weighted interval score (WIS) with its associated decomposition into overprediction, underprediction, and dispersion penalties, the 50% and 90% prediction interval coverage rates, and the absolute error computed on the median prediction.[@bracher_evaluating_2021]
+
+```{r, fig.cap = "Average weighted interval score (WIS) computed by model (y-axis). The total length of each bar is the average WIS across all predictions made. WIS can be decomposed into penalties for overprediction, underprediction and dispersion, the contributions of which are shown by the segments of the bar. The UMass-flusion model has the lowest (best) average WIS, and it received a greater penalty for underprediction relative to the penalty for overprediction."}
 scores <- hubEvals::score_model_out(all_forecasts,
   oracle_output,
   baseline = "FluSight-baseline"
