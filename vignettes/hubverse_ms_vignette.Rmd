@@ -31,7 +31,7 @@ knitr::opts_chunk$set(
 
 # Required software
 
-The following demonstration shows how to access and analyze data from a real hub using `r R.version$string` and several of the hubverse R packages.[@the_consortium_of_infectious_disease_modeling_hubs_hubverse_2025]
+The following demonstration shows how to access and analyze data from a real hub using `r R.version$string` and several of the hubverse R packages[@the_consortium_of_infectious_disease_modeling_hubs_hubverse_2025].
 
 The hubverse packages `hubData`, `hubVis`, `hubEnsembles` and `hubEvals` are best installed through the R-universe package repository to ensure you are working with the latest released versions.
 
@@ -65,7 +65,7 @@ library(ggplot2)
 
 # Load forecast data
 
-CDC's FluSight Forecast Hub exists as a [GitHub repository](https://github.com/cdcepi/FluSight-forecast-hub).[@noauthor_cdcepiflusight-forecast-hub_2025] Using hubverse tools, it also has been mirrored to the cloud, so a copy of the data lives at a publicly-accessible AWS S3 bucket. This means that instead of needing to download a local copy of the repository, the data for this project can be directly accessed from the cloud using `hubData` tools.
+CDC's FluSight Forecast Hub exists as a [GitHub repository](https://github.com/cdcepi/FluSight-forecast-hub)[@noauthor_cdcepiflusight-forecast-hub_2025]. Using hubverse tools, it also has been mirrored to the cloud, so a copy of the data lives at a publicly-accessible AWS S3 bucket. This means that instead of needing to download a local copy of the repository, the data for this project can be directly accessed from the cloud using `hubData` tools.
 
 We start by initializing a connection to the hub in the cloud. Printing displays metadata about the resulting connection.
 
@@ -106,13 +106,13 @@ knitr::kable(
   flusight_data[
     116:120,
     c(
-      "model_id", "reference_date", "location",
+      "model_id", "reference_date", "horizon",
       "output_type", "output_type_id", "value"
     )
   ],
   digits = 2,
   caption = "Five rows of the `flusight_data` object collected above.
-             The \"target\", \"horizon\", and \"target_end_date\" columns have
+             The \"target\", \"location\", and \"target_end_date\" columns have
              been excluded for readability. The \"output_type_id\" and \"value\"
              columns show the different predicted quantiles for the number of
              hospital admissions due to influenza made by the CMU-TimeSeries
@@ -200,9 +200,9 @@ flusight_data |>
 
 # Build ensemble and visualize
 
-Using the model output data collected above, we can pass these data to the `hubEnsembles::simple_ensemble()` function to build an ensemble that takes the mean of predicted values from each model at each quantile level. This new forecast output is then added to the existing forecasts. The hubEnsembles package supports a range of aggregation approaches including a linear opinion pool (probability density averaging) or using the mean or median of quantiles.[@shandross_multi-model_2025] Model weights can be specified for the various approaches, allowing for some models to influence the output more strongly.
+Using the model output data collected above, we can pass these data to the `hubEnsembles::simple_ensemble()` function to build an ensemble that takes the mean of predicted values from each model at each quantile level. This new forecast output is then added to the existing forecasts. The `hubEnsembles` package supports a range of aggregation approaches including a linear opinion pool (probability density averaging) or using the mean or median of quantiles[@shandross_multi-model_2025]. Model weights can be specified for the various approaches, allowing for some models to influence the output more strongly.
 
-```{r, fig.cap = "Forecasts of hospital admissions in Texas due to influenza in the 2024-2025 respiratory virus season. Predictions from five submitted models and an ensemble are shown along with observed data. The observed data are shown as a line with dots for specific weekly observations. Each individual model is shown in orange and the mean ensemble is shown in black, with the 80% prediction intervals shown as shaded regions."}
+```{r, fig.cap = "Forecasts of hospital admissions in Texas due to influenza in the 2024-2025 respiratory virus season. Predictions from five submitted models and an ensemble are shown along with observed data. The observed data are shown as a line with dots for specific weekly observations. Each individual model is shown in grey and the mean ensemble is shown in orange, with the 80% prediction intervals shown as shaded regions."}
 ensemble_forecast <- hubEnsembles::simple_ensemble(flusight_data)
 
 all_forecasts <- flusight_data |>
@@ -219,7 +219,7 @@ all_forecasts |>
     group = "reference_date",
     interactive = FALSE,
     fill_transparency = .2,
-    intervals = 0.90,
+    intervals = 0.8,
     one_color = "darkgray",
     ens_name = "hub-ensemble",
     ens_color = "orange",
@@ -233,7 +233,7 @@ all_forecasts |>
 
 # Evaluate forecasts
 
-The package `hubEvals` can be used to evaluate probabilistic predictions against observed data. The `hubEvals` package creates an interface for hubverse-style model output and oracle output target data to the `scoringutils` package, which is an engine for computing a number of common scores for probabilistic predictions.[@bosse-scoringutils-2024] 
+The package `hubEvals` can be used to evaluate probabilistic predictions against observed data. The `hubEvals` package creates an interface for hubverse-style model output and oracle output target data to the `scoringutils` package, which is an engine for computing a number of common scores for probabilistic predictions[@bosse-scoringutils-2024].
 
 As aforementioned, to evaluate model outputs we use oracle output data, a form of target data which matches and can be merged with hubverse-style model output data but which contains a point prediction representing the eventual observation, as if observed by an oracle model. 
 
@@ -277,7 +277,7 @@ target_data |>
   filter(reference_date %in% reference_dates)
 ```
 
-Now that we have our oracle (observed) data in a format that can be combined with model output data, we can move onto to evaluating it. In this example, we compute and show results for the weighted interval score (WIS) with its associated decomposition into overprediction, underprediction, and dispersion penalties, the 50% and 90% prediction interval coverage rates, and the absolute error computed on the median prediction.[@bracher_evaluating_2021]
+Now that we have our oracle (observed) data in a format that can be combined with model output data, we can move onto to evaluating it. In this example, we compute and show results for the average weighted interval score (WIS) with its associated decomposition into overprediction, underprediction, and dispersion penalties, the 50% and 90% prediction interval coverage rates, and the absolute error computed on the median prediction[@bracher_evaluating_2021].
 
 ```{r, fig.cap = "Average weighted interval score (WIS) computed by model (y-axis). The total length of each bar is the average WIS across all predictions made. WIS can be decomposed into penalties for overprediction, underprediction and dispersion, the contributions of which are shown by the segments of the bar. The UMass-flusion model has the lowest (best) average WIS, and it received a greater penalty for underprediction relative to the penalty for overprediction."}
 scores <- hubEvals::score_model_out(all_forecasts,
