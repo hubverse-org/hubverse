@@ -148,6 +148,7 @@ Accessing target data follows a similar pattern to accessing model output data. 
 
 ```{r}
 ts_data_con <- hubData::connect_target_timeseries(hub_path)
+ts_data_con
 ```
 
 Next, we filter the target data to the location and time period of interest. In this case, we are interested in the state of Texas (FIPS code 48) and the 2024-2025 respiratory virus season, which runs from September 23, 2024 to May 1, 2024. We also filter to the most recent `as_of` date to ensure we are using the latest available data. The `as_of` date is a metadata field that indicates when the target data was last updated.
@@ -260,6 +261,7 @@ The FluSight hub also stores oracle output data in the cloud, and we can access 
 
 ```{r}
 oo_data_con <- hubData::connect_target_oracle_output(hub_path)
+oo_data_con
 ```
 
 Once we have a connection to the data, we can query it for the data of interest. In this case, we want to filter the oracle output data to the same location and time period as the model output data, and for the same target. We also filter to the maximum `as_of` date to ensure we are using the latest available data. The `reference_date`, which is present in model output data but not in oracle data, is computed as the `target_end_date` minus the `horizon` in weeks, and used to filter the oracle output data to the same reference dates as the model output data. 
