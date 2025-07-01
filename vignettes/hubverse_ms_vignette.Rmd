@@ -264,23 +264,21 @@ oo_data_con <- hubData::connect_target_oracle_output(hub_path)
 oo_data_con
 ```
 
-Once we have a connection to the data, we can query it for the data of interest. In this case, we want to filter the oracle output data to the same location and time period as the model output data, and for the same target. We also filter to the maximum `as_of` date to ensure we are using the latest available data. The `reference_date`, which is present in model output data but not in oracle data, is computed as the `target_end_date` minus the `horizon` in weeks, and used to filter the oracle output data to the same reference dates as the model output data. 
+Once we have a connection to the data, we can query it for the data of interest. In this case, we want to filter the oracle output data to the same location and time period as the model output data, and for the same target.  
 
 ```{r}
 oracle_output <- oo_data_con |>
-  arrow::to_duckdb() |>
-  mutate(reference_date = target_end_date - horizon * 7L) |>
   filter(
-    reference_date %in% reference_dates,
     target == "wk inc flu hosp",
     output_type == "quantile",
-    location == "48", ## FIPS code for Texas
-    horizon > -1,
-    as_of == max(as_of)
+    location == "48" ## FIPS code for Texas
   ) |>
-  select(target, reference_date, target_end_date, location, horizon, output_type, output_type_id, oracle_value) |>
-  arrange(reference_date, horizon) |>
-  collect()
+  select(target, target_end_date, location, output_type, output_type_id, oracle_value) |>
+  distinct() |>
+  arrange(target_end_date) |>
+  collect() 
+
+oracle_output
 ```
 
 
@@ -288,14 +286,7 @@ Note that some hubs may not store oracle output data but it can [generally be ge
 
 ```{r, eval=FALSE}
 target_data |>
-  select(target_end_date, location, observation) |>
-  rename(
-    target_end_date = date,
-    oracle_value = observation
-  ) |>
-  tidyr::crossing(horizon = 0:3) |>
-  mutate(reference_date = target_end_date - horizon * 7L) |>
-  filter(reference_date %in% reference_dates)
+  select(target_end_date, location, observation)
 ```
 
 Now that we have our oracle (observed) data in a format that can be combined with model output data, we can move on to evaluating it. In this example, we compute and show results for the average weighted interval score (WIS) with its associated decomposition into overprediction, underprediction, and dispersion penalties, the 50% and 90% prediction interval coverage rates, and the absolute error computed on the median prediction[@bracher_evaluating_2021]. To do this, we use the `hubEvals::score_model_out()` function which scores model outputs against observed data. Further information is available in the help page of the `hubEvals` package.
