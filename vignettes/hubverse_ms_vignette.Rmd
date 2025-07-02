@@ -76,7 +76,7 @@ library(ggplot2)
 
 # Load forecast data
 
-CDC's FluSight Forecast Hub exists as a [GitHub repository](https://github.com/cdcepi/FluSight-forecast-hub)[@noauthor_cdcepiflusight-forecast-hub_2025]. Using hubverse tools, the data for this hub has been validated and mirrored to the cloud, so a copy of the model output for this hub hub lives at a publicly-accessible AWS S3 bucket. This means that instead of needing to download a local copy of the repository, the data for this project can be directly accessed from the cloud using `hubData` tools.
+CDC's FluSight Forecast Hub exists as a [GitHub repository](https://github.com/cdcepi/FluSight-forecast-hub)[@noauthor_cdcepiflusight-forecast-hub_2025]. Using hubverse tools, the data for this hub has been validated and mirrored to the cloud, so a copy of the model output for this hub lives at a publicly-accessible AWS S3 bucket. This means that instead of needing to download a local copy of the repository, the data for this project can be directly accessed from the cloud using `hubData` tools. The data is organised in a format we can open as an arrow dataset through R package `arrow` directly .
 
 We start by initializing a connection to the hub in the cloud. Printing displays metadata about the resulting connection.
 
@@ -89,7 +89,7 @@ hub_con
 The hub connection object printed above shows information about the hub, including the number and format of files loaded, the schema of the data, and column names and data types of model-output data. Note that the `skip_checks = TRUE` argument is used to skip the validation checks that are normally performed when connecting to a hub. In practice, since these data are all validated upon submission to the hub and since the checks impact performance, we omit the checks in this example.
 
 We then collect a subset of model outputs that we will interact with further in this demonstration. Specifically, we will extract zero through three week-ahead quantile predictions of weekly incident flu hospitalizations made for the state of Texas on three dates in late 2024 and early 2025. For simplicity, we will restrict our query to predictions made for five arbitrarily chosen models, although predictions for over 30 models are available on each of these dates. 
-While the files are stored in the hub separately by model and reference date, the `hubData::collect_hub()` function, through functionality from `arrow`, allows us to act on all of the data collectively, as if if were part of a single `data.frame` object.
+Although the data are stored in the hub across multiple files, organised by `model_id` and `round_id`, `hubData::connect_hub()` wraps functionality from `arrow` to open a connection to the data as an Arrow Dataset. This allows us to act on all of the data collectively, as if it were a single `data.frame` object.  Arrow datasets, including those stored on S3, behave as lazy data frames—they do not load data into memory until explicitly queried or collected. The `arrow` package also provides a [dplyr](https://dplyr.tidyverse.org/) interface to Arrow Datasets which allows us to query and manipulate the data.
 
 ```{r}
 models <- c(
@@ -113,7 +113,7 @@ flusight_data <- hub_con |>
   ) |>
   hubData::collect_hub()
 ```
-
+The `collect_hub` `hubData` function wraps the `dplyr::collect()` function but also coerces the output to a `model_out_tbl` class object where possible.
 
 ```{r, echo=FALSE}
 knitr::kable(
