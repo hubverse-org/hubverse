@@ -120,13 +120,13 @@ knitr::kable(
   flusight_data[
     116:120,
     c(
-      "model_id", "reference_date", "horizon",
+      "model_id", "target_end_date", "location",
       "output_type", "output_type_id", "value"
     )
   ],
   digits = 2,
   caption = "Five rows of the `flusight_data` object collected above.
-             The \"target\", \"location\", and \"target_end_date\" columns have
+             The \"horizon\" and \"reference_date\" columns have
              been excluded for readability. The \"output_type_id\" and \"value\"
              columns show the different predicted quantiles for the number of
              hospital admissions due to influenza made by the CMU-TimeSeries
