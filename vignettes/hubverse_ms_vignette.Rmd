@@ -180,7 +180,7 @@ The resulting target data contains the actual number of hospital admissions due 
 ```{r, echo=FALSE}
 knitr::kable(target_data[1:5, ],
   digits = 2,
-  caption = "Five rows of the `target_data` object read in above.
+  caption = "Five rows of the time-series `target_data` object read in above.
              The observation column shows the number of hospital admissions
              due to influenza reported in Texas (location 48) on the week
              ending on each date."
@@ -283,9 +283,19 @@ oracle_output <- oo_data_con |>
   select(target, target_end_date, location, output_type, output_type_id, oracle_value) |>
   distinct() |>
   arrange(target_end_date) |>
-  collect() 
+  collect()
+```
 
-oracle_output
+```{r, echo=FALSE}
+cols_to_show <- c("target", "target_end_date",
+                  "location", "output_type", "oracle_value")
+knitr::kable(oracle_output[1:5, cols_to_show],
+  caption = "Five rows of the `oracle_output` object from above.
+             The `oracle_value` column shows the observed number of 
+             hospital admissions due to influenza reported in Texas 
+             (location 48) on the week
+             ending on each `target_end_date`."
+)
 ```
 
 
