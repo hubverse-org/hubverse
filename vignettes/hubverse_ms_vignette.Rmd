@@ -1,18 +1,4 @@
 ---
-title: "Supplemental Code Demo"
-subtitle: "Accessing Data from the US Flusight Hubverse Project"
-author: 
-- Consortium of Infectious Disease Modeling Hubs
-- Melissa Kerr
-- Rebecca Borchering
-- Alvaro Castro Rivadeneira
-- Lucie Contamin
-- Sebastian Funk
-- Harry Hochheiser
-- Emily Howerton
-- Anna Krystalli
-- Li Shandross
-- Nicholas G Reich
 date: "`r Sys.Date()`"
 output: 
   pdf_document:
